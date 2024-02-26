@@ -1,0 +1,6 @@
+# File which contains network information
+networks.txt
+# Version file
+version.txt
+
+.idea/
