@@ -6,8 +6,8 @@ station.active(True)
 with open("networks.txt", "r") as networks:
     for net in networks.read().split("\n"):
         if not station.isconnected():
-            print(f"Attempting connection to {net.split()[0]}")
-            station.connect(net.split()[0], net.split()[1])
+            print(f"Attempting connection to {net.split("\t")[0]}")
+            station.connect(net.split("\t")[0], net.split("\t")[1])
         else:
             print("Network found")
 
