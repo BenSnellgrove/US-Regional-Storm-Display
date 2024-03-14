@@ -1,6 +1,9 @@
 # File which contains network information
-networks.txt
+network.py
 # Version file
 version.txt
 
 .idea/
+
+*.bak
+*.txt
