@@ -180,6 +180,21 @@ alert_states = {
 }
 
 
+UPDATE_PIN = 2
+
+alert_pins = {
+    "w-pacific": [32, 23, ],
+    "w-mountain": [33, 22, ],
+    "mw-west": [25, 21, ],
+    "mw-east": [26, 19, ],
+    "s-west": [27, 18, ],
+    "s-east": [14, 5, ],
+    "s-atlantic": [12, 17, ],
+    "ne-atlantic": [13, 16, ],
+    "ne-england": [15, 4, ]
+}
+
+
 # Get updated version based on raw GitHub file
 def get_current_version():
     try:
@@ -248,20 +263,44 @@ if VERSION < get_current_version():
     print("Update required!")
     print("Please visit https://github.com/BenSnellgrove/US-Regional-Storm-Display for the latest version")
 
+    led = Pin(UPDATE_PIN, Pin.OUT)
+    led.value(True)
+    for n in range(10):
+        sleep(0.7)
+        led.value(not led.value())
+    led.value(False)
+
     # Allow continued use, don't want to force updates
-    pass
+
 
 while True:
-    # Each group 1min apart
-    for state_group in state_groups:
-        # Reset alert states
-        alert_states[state_group] = [False, False, False]
-        for us_state in state_groups[state_group]:
-            alert_states[state_group] = [a and b for a, b in
-                                         zip(alert_states[state_group], get_active_events(us_state))]
 
-        # Pins
-        print(f"state_group {state_group}")
-        print(alert_states[state_group])
+    try:
 
-        sleep(60)
+        # Each group 1min apart
+        for state_group in state_groups:
+            # Reset alert states
+            alert_states[state_group] = [False, False, False]
+            for us_state in state_groups[state_group]:
+                alert_states[state_group] = [a and b for a, b in
+                                             zip(alert_states[state_group], get_active_events(us_state))]
+                #alert_states[state_group] = [True, True, False]
+
+            # Pins
+            print(f"state_group {state_group}")
+            print(alert_states[state_group])
+
+
+            # Work this way round, so can remove pins and maintain functionality
+            pin_group = alert_pins[state_group]
+            for pin_n in range(len(pin_group)):
+                led = Pin(pin_group[pin_n], Pin.OUT)
+                led.value(alert_states[state_group][pin_n])
+
+            sleep(60)
+
+    # On absolutely any error
+    except Exception:
+        led = Pin(UPDATE_PIN, Pin.OUT)
+        led.value(True)
+
